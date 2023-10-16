@@ -16,19 +16,19 @@ FASTSAM_WEIGHTS_DIR = os.path.join(FASTSAM_DIR, "weights")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def run_command(cmd, directory=None):
-    with subprocess.DEVNULL as DEVNULL:
-        result = subprocess.run(cmd, cwd=directory, stdout=DEVNULL, stderr=subprocess.STDOUT, check=True)
+    result = subprocess.run(cmd, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if result.returncode != 0:
-        raise ValueError(f"Command '{' '.join(cmd)}' failed to run.")
+        raise ValueError(f"Command '{' '.join(cmd)}' failed to run. Stdout: {result.stdout}, Stderr: {result.stderr}")
+
 
 def install_fastsam_dependencies():
     commands = [
-        (["git", "-q", "clone", "https://github.com/CASIA-IVA-Lab/FastSAM"], AUTODISTILL_DIR),
+        (["git", "clone", "https://github.com/CASIA-IVA-Lab/FastSAM"], AUTODISTILL_DIR),
         (["pip", "install", "--quiet", "-r", "requirements.txt"], FASTSAM_DIR),
         (["mkdir", "-p", FASTSAM_WEIGHTS_DIR], None),
         (["wget", "-q", "-P", FASTSAM_WEIGHTS_DIR, "https://huggingface.co/spaces/An-619/FastSAM/resolve/main/weights/FastSAM.pt"], None),
         (["wget", "-q", "-P", FASTSAM_WEIGHTS_DIR, "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"], None),
-        (["git", "-q", "clone", "https://github.com/IDEA-Research/GroundingDINO.git"], AUTODISTILL_DIR),
+        (["git", "clone", "https://github.com/IDEA-Research/GroundingDINO.git"], AUTODISTILL_DIR),
         (["pip", "install", "--quiet", "-e", "."], os.path.join(AUTODISTILL_DIR, "GroundingDINO"))
     ]
     
@@ -42,7 +42,7 @@ class FastSAM(DetectionBaseModel):
     def __init__(self, ontology: CaptionOntology):
         if not os.path.exists(FASTSAM_DIR):
             install_fastsam_dependencies()
-
+        
         sys.path.insert(0, FASTSAM_DIR)
         from fastsam import FastSAM, FastSAMPrompt
 
