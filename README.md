@@ -29,6 +29,10 @@ pip3 install autodistill-fastsam
 
 ## Quickstart
 
+> [!NOTE]
+
+> When you first run this model, the installation process will start. Inference may take a few seconds (in testing, up to 30 seconds) while the model is downloaded and installed. Once the model is installed, inference will be much faster.
+
 ```python
 from autodistill_fastsam import FastSAM
 

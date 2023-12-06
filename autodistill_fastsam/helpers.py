@@ -1,8 +1,9 @@
 import numpy as np
-import torch
 import supervision as sv
+import torch
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def combine_detections(detections_list, overwrite_class_ids):
     if len(detections_list) == 0:
